@@ -58,20 +58,11 @@
 
 <script>
 async function loadApiStats() {
-    const apiKey = "dbd439e3412d794e56770f21a028045aca78794a76c85925e528267a4e8ca8de";
-    
-    // Tanggal 30 hari ke belakang
-    const today = new Date().toISOString().split('T')[0];
-    const dateObj = new Date();
-    dateObj.setDate(dateObj.getDate() - 30);
-    const dateFrom = dateObj.toISOString().split('T')[0];
-
-    // Menggunakan CORS Proxy publik untuk menembus CORS browser
-    const targetUrl = `https://partner.imonetizeit.com/api/v1/statistics/smartlink?api_key=${apiKey}&date_from=${dateFrom}&date_to=${today}`;
-    const proxyUrl = `https://corsproxy.io/?` + encodeURIComponent(targetUrl);
+    // Alamat proxy PHP di hosting maranita.free.ie
+    const phpProxyUrl = "http://maranita.free.ie/get_stats.php";
 
     try {
-        const response = await fetch(proxyUrl);
+        const response = await fetch(phpProxyUrl);
         const resData = await response.json();
 
         const tbody = document.getElementById('api-table');
@@ -124,7 +115,7 @@ async function loadApiStats() {
 
     } catch (e) {
         console.error("Error loading data:", e);
-        document.getElementById('api-table').innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Gagal memuat data. Coba refresh halaman.</td></tr>';
+        document.getElementById('api-table').innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Gagal memuat data dari PHP Server. Coba refresh halaman.</td></tr>';
     }
 }
 
