@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realtime iMonetizeIt Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 15px; }
+        .container { max-width: 900px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h2 { margin-top: 0; color: #333; font-size: 20px; }
+        .stats { display: flex; gap: 10px; margin-bottom: 20px; }
+        .card { flex: 1; padding: 12px; color: white; border-radius: 6px; text-align: center; }
+        .card h3 { margin: 0; font-size: 22px; }
+        .card p { margin: 5px 0 0; font-size: 13px; opacity: 0.9; }
+        .bg-orange { background: #fd7e14; }
+        .bg-blue { background: #007bff; }
+        .bg-green { background: #28a745; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        th { background: #f8f9fa; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Statistik Realtime iMonetizeIt (Vercel)</h2>
+
+    <div class="stats">
+        <div class="card bg-orange">
+            <h3 id="total-hits">0</h3>
+            <p>Total Klik (Hits)</p>
+        </div>
+        <div class="card bg-blue">
+            <h3 id="total-conv">0</h3>
+            <p>Total Konversi</p>
+        </div>
+        <div class="card bg-green">
+            <h3 id="total-payout">$0.00</h3>
+            <p>Total Earning</p>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Detail / Country</th>
+                <th>Hits (Klik)</th>
+                <th>Uniq</th>
+                <th>Konversi</th>
+                <th>Earning</th>
+            </tr>
+        </thead>
+        <tbody id="api-table">
+            <tr><td colspan="5" style="text-align:center;">Memuat data...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+async function loadApiStats() {
+    try {
+        const response = await fetch('/api/get_stats');
+        const result = await response.json();
+
+        const tbody = document.getElementById('api-table');
+        tbody.innerHTML = '';
+
+        let totalHits = 0;
+        let totalConv = 0;
+        let totalEarning = 0;
+
+        let items = Array.isArray(result) ? result : (result.data || []);
+
+        if (items.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Belum ada data masuk.</td></tr>';
+            return;
+        }
+
+        items.forEach(item => {
+            const hits = parseInt(item.hits || item.clicks || 0);
+            const uniq = parseInt(item.uniq || item.unique_clicks || 0);
+            const conv = parseInt(item.conversions || item.conv || 0);
+            const earn = parseFloat(item.earnings || item.payout || 0);
+            const country = item.country || item.country_code || item.name || 'Global';
+
+            totalHits += hits;
+            totalConv += conv;
+            totalEarning += earn;
+
+            const row = `<tr>
+                <td><strong>${country}</strong></td>
+                <td>${hits}</td>
+                <td>${uniq}</td>
+                <td>${conv}</td>
+                <td>$${earn.toFixed(2)}</td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+
+        document.getElementById('total-hits').innerText = totalHits;
+        document.getElementById('total-conv').innerText = totalConv;
+        document.getElementById('total-payout').innerText = '$' + totalEarning.toFixed(2);
+
+    } catch (e) {
+        console.log("Error loading data...");
+    }
+}
+
+setInterval(loadApiStats, 10000);
+loadApiStats();
+</script>
+
+</body>
+</html>
