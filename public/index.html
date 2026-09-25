@@ -24,7 +24,7 @@
 
 <div class="container">
     <h2>Statistik Realtime iMonetizeIt (Vercel)</h2>
-
+    
     <div class="stats">
         <div class="card bg-orange">
             <h3 id="total-hits">0</h3>
@@ -43,7 +43,7 @@
     <table>
         <thead>
             <tr>
-                <th>Detail / Country</th>
+                <th>Nama Smartlink / Detail</th>
                 <th>Hits (Klik)</th>
                 <th>Uniq</th>
                 <th>Konversi</th>
@@ -60,35 +60,45 @@
 async function loadApiStats() {
     try {
         const response = await fetch('/api/get_stats');
-        const result = await response.json();
+        const resData = await response.json();
 
         const tbody = document.getElementById('api-table');
         tbody.innerHTML = '';
+
+        // Deteksi lokasi array data pada respon iMonetizeIt
+        let items = [];
+        if (Array.isArray(resData)) {
+            items = resData;
+        } else if (resData && resData.data) {
+            items = Array.isArray(resData.data) ? resData.data : Object.values(resData.data);
+        } else if (resData && typeof resData === 'object') {
+            items = Object.values(resData).filter(item => typeof item === 'object');
+        }
+
+        if (!items || items.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Belum ada data masuk.</td></tr>';
+            return;
+        }
 
         let totalHits = 0;
         let totalConv = 0;
         let totalEarning = 0;
 
-        let items = Array.isArray(result) ? result : (result.data || []);
-
-        if (items.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Belum ada data masuk.</td></tr>';
-            return;
-        }
-
         items.forEach(item => {
+            if (!item) return;
+
+            const name = item.name || item.smartlink_name || item.country || item.date || 'Smartlink';
             const hits = parseInt(item.hits || item.clicks || 0);
             const uniq = parseInt(item.uniq || item.unique_clicks || 0);
-            const conv = parseInt(item.conversions || item.conv || 0);
-            const earn = parseFloat(item.earnings || item.payout || 0);
-            const country = item.country || item.country_code || item.name || 'Global';
+            const conv = parseInt(item.conversions || item.conv || item.approved_conversions || 0);
+            const earn = parseFloat(item.earnings || item.payout || item.income || 0);
 
             totalHits += hits;
             totalConv += conv;
             totalEarning += earn;
 
             const row = `<tr>
-                <td><strong>${country}</strong></td>
+                <td><strong>${name}</strong></td>
                 <td>${hits}</td>
                 <td>${uniq}</td>
                 <td>${conv}</td>
@@ -102,7 +112,8 @@ async function loadApiStats() {
         document.getElementById('total-payout').innerText = '$' + totalEarning.toFixed(2);
 
     } catch (e) {
-        console.log("Error loading data...");
+        console.error("Error loading data:", e);
+        document.getElementById('api-table').innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Gagal memuat data dari API.</td></tr>';
     }
 }
 
