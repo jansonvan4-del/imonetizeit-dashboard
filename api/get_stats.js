@@ -14,21 +14,37 @@ module.exports = async (req, res) => {
   try {
     const response = await axios.get(`https://partner.imonetizeit.com/api/v1/statistics/smartlink`, {
       params: {
-        api_key: apiKey,
         date_from: dateFrom,
         date_to: today
       },
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Api-Key': apiKey,
+        'Authorization': `Bearer ${apiKey}`,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Accept': 'application/json'
       }
     });
 
     return res.status(200).json(response.data);
   } catch (error) {
-    return res.status(500).json({ 
-      error: "Gagal mengambil data API iMonetizeIt", 
-      details: error.message 
-    });
+    // Jika masih gagal dengan header, coba fallback dengan query param
+    try {
+      const fallbackResponse = await axios.get(`https://partner.imonetizeit.com/api/v1/statistics/smartlink`, {
+        params: {
+          api_key: apiKey,
+          date_from: dateFrom,
+          date_to: today
+        },
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        }
+      });
+      return res.status(200).json(fallbackResponse.data);
+    } catch (fallbackError) {
+      return res.status(500).json({ 
+        error: "Gagal mengambil data API iMonetizeIt", 
+        details: fallbackError.response ? fallbackError.response.data : fallbackError.message 
+      });
+    }
   }
 };
