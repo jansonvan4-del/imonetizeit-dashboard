@@ -20,7 +20,7 @@ $response = supabase_request("links?slug=eq." . urlencode($slug) . "&select=*");
 
 if (!isset($response['code']) || $response['code'] !== 200 || empty($response['data'])) {
     http_response_code(404);
-    die("<h3 style='color:white; text-align:center; padding-top:50px;'>404 - Link tidak ditemukan.</h3>");
+    die("<h3 style='color:white; text-align:center; padding-top:50px;'>404 - Link not found.</h3>");
 }
 
 $linkData = $response['data'][0];
@@ -47,7 +47,7 @@ if (!empty($linkData['click_id'])) {
 
 // Data Meta
 $title = !empty($linkData['meta_title']) ? $linkData['meta_title'] : 'Live Session Today';
-$desc  = !empty($linkData['meta_description']) ? $linkData['meta_description'] : 'Klik link untuk menuju ke halaman tujuan.';
+$desc  = !empty($linkData['meta_description']) ? $linkData['meta_description'] : 'Click the link to proceed to the destination page.';
 $image = !empty($linkData['meta_image']) ? trim($linkData['meta_image']) : '';
 
 // URL Link saat ini
@@ -58,7 +58,7 @@ $current_url = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 $lp_mode = strtoupper(trim((string)($linkData['lp'] ?? 'OFF')));
 ?>
 <!DOCTYPE html>
-<html lang="id" prefix="og: https://ogp.me/ns#">
+<html lang="en" prefix="og: https://ogp.me/ns#">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -165,15 +165,15 @@ switch ($lp_mode) {
                 <?php endif; ?>
 
                 <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50 space-y-2">
-                    <span class="text-xs text-slate-400 uppercase tracking-wider block font-semibold">Mengalihkan Dalam</span>
+                    <span class="text-xs text-slate-400 uppercase tracking-wider block font-semibold">Redirecting In</span>
                     <div class="text-4xl font-extrabold text-cyan-400" id="countdown">5</div>
                 </div>
 
                 <div>
                     <a id="redirect-btn" href="<?= htmlspecialchars($target_url); ?>" class="hidden block w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-cyan-600/30 text-sm">
-                        Lanjutkan Ke Link Tujuan →
+                        Continue to Destination Link →
                     </a>
-                    <p id="wait-msg" class="text-xs text-slate-500">Tombol akan muncul setelah hitungan mundur selesai...</p>
+                    <p id="wait-msg" class="text-xs text-slate-500">Button will appear after the countdown finishes...</p>
                 </div>
             </div>
 
@@ -212,8 +212,8 @@ switch ($lp_mode) {
                 </div>
 
                 <div class="space-y-1">
-                    <h1 class="text-2xl font-extrabold text-white tracking-wide">Portal Konten</h1>
-                    <p id="status-text" class="text-xs font-semibold text-cyan-400 transition-all duration-300">Mengecek Koneksi...</p>
+                    <h1 class="text-2xl font-extrabold text-white tracking-wide">Content Portal</h1>
+                    <p id="status-text" class="text-xs font-semibold text-cyan-400 transition-all duration-300">Checking Connection...</p>
                 </div>
 
                 <div class="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden">
@@ -222,19 +222,19 @@ switch ($lp_mode) {
 
                 <div class="py-1">
                     <p class="text-xs font-medium text-purple-300">
-                        <span id="online-counter" class="font-bold">603</span> orang sedang online
+                        <span id="online-counter" class="font-bold">603</span> people online right now
                     </p>
                 </div>
 
                 <div>
                     <a href="<?= htmlspecialchars($target_url); ?>" id="action-btn" class="btn-portal-cyan block w-full text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg text-sm transition-all duration-300 opacity-60 pointer-events-none">
-                        Klik Untuk Melanjutkan &nbsp;&rarr;
+                        Click to Continue &nbsp;&rarr;
                     </a>
                 </div>
 
                 <div class="pt-1">
                     <p class="text-[10px] text-slate-500 tracking-widest uppercase font-semibold">
-                        KONEKSI CEPAT &bull; PORTAL AMAN
+                        FAST CONNECTION &bull; SECURE PORTAL
                     </p>
                 </div>
             </div>
@@ -243,7 +243,7 @@ switch ($lp_mode) {
                 setTimeout(() => {
                     const statusText = document.getElementById('status-text');
                     const actionBtn = document.getElementById('action-btn');
-                    if (statusText) statusText.innerText = "Koneksi Siap";
+                    if (statusText) statusText.innerText = "Connection Ready";
                     if (actionBtn) actionBtn.classList.remove('opacity-60', 'pointer-events-none');
                 }, 2500);
 
@@ -352,11 +352,175 @@ switch ($lp_mode) {
         <?php
         break;
 
+    case '4':
+        // ==================== LANDING PAGE 4 (VIDEO / STREAMING PLAYER) ====================
+        ?>
+        <body class="bg-black text-white min-h-screen flex items-center justify-center p-4">
+            <div class="max-w-md w-full bg-[#111625] border border-slate-800 rounded-3xl p-5 shadow-2xl space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div class="flex items-center gap-2 text-red-500 font-bold text-xs uppercase tracking-wider">
+                        <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping"></span>
+                        HD STREAMING PORTAL
+                    </div>
+                    <span class="text-[10px] text-slate-400 font-mono">SERVER #04</span>
+                </div>
+
+                <div class="relative rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 aspect-video flex items-center justify-center group">
+                    <?php if (!empty($image)): ?>
+                        <img src="<?= htmlspecialchars($image); ?>" class="w-full h-full object-cover opacity-40 blur-[1px]" alt="Video Thumbnail">
+                    <?php endif; ?>
+                    
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <div id="play-loader" class="w-14 h-14 rounded-full border-4 border-red-500/30 border-t-red-600 animate-spin flex items-center justify-center"></div>
+                    </div>
+
+                    <div class="absolute bottom-3 left-3 right-3 bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-700/50 flex justify-between items-center text-[11px]">
+                        <span class="text-slate-300 font-medium truncate"><?= htmlspecialchars($title); ?></span>
+                        <span class="text-xs font-bold text-red-400">1080p</span>
+                    </div>
+                </div>
+
+                <div class="space-y-1 text-center">
+                    <p id="status-lp4" class="text-xs font-semibold text-slate-400">Preparing Stream Buffering...</p>
+                    <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-red-600 h-full w-0 animate-progress"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <a href="<?= htmlspecialchars($target_url); ?>" id="btn-lp4" class="block w-full text-center bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-red-900/40 opacity-60 pointer-events-none">
+                        ▶ PLAY NOW
+                    </a>
+                </div>
+
+                <div class="text-center pt-1">
+                    <p class="text-[10px] text-slate-500">SSL 256-Bit Encrypted Connection • Safe & Ad-Free</p>
+                </div>
+            </div>
+
+            <script>
+                setTimeout(() => {
+                    const statusLP4 = document.getElementById('status-lp4');
+                    const btnLP4 = document.getElementById('btn-lp4');
+                    const loader = document.getElementById('play-loader');
+                    if (statusLP4) statusLP4.innerText = "Buffer Complete! Click Play Now";
+                    if (btnLP4) btnLP4.classList.remove('opacity-60', 'pointer-events-none');
+                    if (loader) {
+                        loader.classList.remove('animate-spin', 'border-t-red-600');
+                        loader.innerHTML = '<span class="text-red-500 text-xl font-bold ml-1">▶</span>';
+                    }
+                }, 2500);
+            </script>
+        </body>
+        </html>
+        <?php
+        break;
+
+    case '5':
+        // ==================== LANDING PAGE 5 (MODERN SECURITY VERIFICATION) ====================
+        ?>
+        <body class="bg-[#030712] text-slate-100 min-h-screen flex items-center justify-center p-4 font-sans selection:bg-indigo-500 selection:text-white">
+            <div class="absolute inset-0 overflow-hidden pointer-events-none">
+                <div class="absolute -top-40 -left-40 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
+            </div>
+
+            <div class="max-w-md w-full bg-slate-900/80 border border-slate-800/80 rounded-3xl p-7 shadow-2xl backdrop-blur-xl relative z-10 space-y-6">
+                <!-- Header Brand / Shield -->
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-xl">
+                        🛡️
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-white text-base tracking-tight">Secure Access Verification</h3>
+                        <p class="text-xs text-slate-400">Smart encryption protection system</p>
+                    </div>
+                </div>
+
+                <!-- Interactive Verification Box -->
+                <div id="verify-card" class="bg-slate-950/60 border border-slate-800/90 p-4 rounded-2xl flex items-center justify-between transition-all duration-300 hover:border-indigo-500/50">
+                    <div class="flex items-center gap-3.5">
+                        <label class="relative flex items-center justify-center cursor-pointer">
+                            <input type="checkbox" id="captcha-check" class="sr-only peer" onclick="triggerVerifyModern()">
+                            <div class="w-6 h-6 bg-slate-900 border-2 border-slate-700 rounded-lg peer peer-checked:bg-indigo-600 peer-checked:border-indigo-500 transition-all duration-200 flex items-center justify-center">
+                                <svg class="w-3.5 h-3.5 text-white scale-0 peer-checked:scale-100 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                        </label>
+                        <div>
+                            <span class="text-xs font-semibold text-slate-200 block">Security Confirmation</span>
+                            <span class="text-[10px] text-slate-400">Check to proceed to the link</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="inline-block px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-mono rounded-full">
+                            SSL 256-bit
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Loading State (Hidden Initially) -->
+                <div id="verifying-box" class="hidden text-center space-y-3 py-2">
+                    <div class="flex items-center justify-center gap-2 text-indigo-400 text-xs font-medium">
+                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Validating Device Session...
+                    </div>
+                    <div class="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden border border-slate-800">
+                        <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-full w-0 animate-progress rounded-full"></div>
+                    </div>
+                </div>
+
+                <!-- Action Button Success (Hidden Initially) -->
+                <div>
+                    <a id="btn-lp5" href="<?= htmlspecialchars($target_url); ?>" class="hidden group relative w-full inline-flex items-center justify-center px-6 py-3.5 text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-600 rounded-xl shadow-lg shadow-indigo-600/30 hover:from-indigo-500 hover:to-violet-500 transition-all duration-300 transform active:scale-[0.98]">
+                        <span>Open Destination Link</span>
+                        <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- Footer Info -->
+                <div class="flex items-center justify-between text-[10px] text-slate-500 pt-2 border-t border-slate-800/80 font-mono">
+                    <span>🛡️ Secure Gateway</span>
+                    <span>Ray ID: <?= substr(md5(time()), 0, 10); ?></span>
+                </div>
+            </div>
+
+            <script>
+                function triggerVerifyModern() {
+                    const check = document.getElementById('captcha-check');
+                    const verifyBox = document.getElementById('verifying-box');
+                    const btnLP5 = document.getElementById('btn-lp5');
+                    const verifyCard = document.getElementById('verify-card');
+                    
+                    if (check && check.checked) {
+                        check.disabled = true;
+                        if (verifyCard) verifyCard.classList.add('opacity-75');
+                        if (verifyBox) verifyBox.classList.remove('hidden');
+                        
+                        setTimeout(() => {
+                            if (verifyBox) verifyBox.classList.add('hidden');
+                            if (verifyCard) verifyCard.classList.add('border-indigo-500/60', 'bg-indigo-950/10');
+                            if (btnLP5) btnLP5.classList.remove('hidden');
+                        }, 2200);
+                    }
+                }
+            </script>
+        </body>
+        </html>
+        <?php
+        break;
+
     default:
         // ==================== LP OFF / DIRECT REDIRECT ====================
         ?>
         <body class="text-white flex items-center justify-center min-h-screen">
-            <p class="text-sm text-slate-400">Mengarahkan Anda ke halaman tujuan...</p>
+            <p class="text-sm text-slate-400">Redirecting you to the destination page...</p>
         </body>
         </html>
         <?php
